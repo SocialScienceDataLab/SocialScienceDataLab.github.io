@@ -1,0 +1,956 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Getting the most out of comparative vote switching data</title>
+    <meta charset="utf-8" />
+    <link href="_presentation_files/remark-css-0.0.1/default.css" rel="stylesheet" />
+    <link href="_presentation_files/font-awesome-5.3.1/css/fontawesome-all.min.css" rel="stylesheet" />
+    <script src="_presentation_files/htmlwidgets-1.5.4/htmlwidgets.js"></script>
+    <link href="_presentation_files/datatables-css-0.0.0/datatables-crosstalk.css" rel="stylesheet" />
+    <script src="_presentation_files/datatables-binding-0.20/datatables.js"></script>
+    <script src="_presentation_files/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+    <link href="_presentation_files/dt-core-1.11.3/css/jquery.dataTables.min.css" rel="stylesheet" />
+    <link href="_presentation_files/dt-core-1.11.3/css/jquery.dataTables.extra.css" rel="stylesheet" />
+    <script src="_presentation_files/dt-core-1.11.3/js/jquery.dataTables.min.js"></script>
+    <link href="_presentation_files/crosstalk-1.2.0/css/crosstalk.min.css" rel="stylesheet" />
+    <script src="_presentation_files/crosstalk-1.2.0/js/crosstalk.min.js"></script>
+    <link rel="stylesheet" href="xaringan/mtheme2.css" type="text/css" />
+    <link rel="stylesheet" href="xaringan/fonts_mtheme.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+# Getting the most out of comparative vote switching data
+## A new framework for studying dynamic multi-party competition
+### <table class="authors">
+<tbody>
+<tr>
+<td>
+Denis Cohen
+</td>
+<td>
+Werner Krause
+</td>
+<td>
+Tarik Abou-Chadi
+</td>
+</tr>
+<tr>
+<td>
+.font80[University of Mannheim]
+</td>
+<td>
+.font80[Humboldt University of Berlin]
+</td>
+<td>
+.font80[University of Zurich]
+</td>
+</tr>
+</tbody>
+</table>
+<table class="contact">
+<tbody>
+<tr>
+<td>
+<i class="fas  fa-envelope "></i> <a href="mailto:denis.cohen@mzes.uni-mannheim.de"><code>denis.cohen@mzes.uni-mannheim.de</code></a>
+</td>
+<td>
+<i class="fas  fa-envelope "></i> <a href="mailto:werner.krause@hu-berlin.de"><code>werner.krause@hu-berlin.de</code></a>
+</td>
+<td>
+<i class="fas  fa-envelope "></i> <a href="mailto:abou-chadi@ipz.uzh.ch"><code>abou-chadi@ipz.uzh.ch</code></a>
+</td>
+</tr>
+<tr>
+<td>
+<i class="fas  fa-globe "></i> <a href="https://denis-cohen.github.io"><code>denis-cohen.github.io</code></a>
+</td>
+<td>
+</td>
+<td>
+<i class="fas  fa-globe "></i> <a href="https://www.tarikabouchadi.net/"><code>tarikabouchadi.net</code></a>
+</td>
+</tr>
+<tr>
+<td>
+<i class="fab  fa-twitter "></i> <a href="https://twitter.com/denis_cohen"><code>@denis_cohen</code></a>
+</td>
+<td>
+<i class="fab  fa-twitter "></i> <a href="https://twitter.com/krause_we"><code>@krause_we</code></a>
+</td>
+<td>
+<i class="fab  fa-twitter "></i> <a href="https://twitter.com/tabouchadi"><code>@tabouchadi</code></a>
+</td>
+</tr>
+</tbody>
+</table>
+### MZES Social Science Data Lab <br /> December 8, 2021
+
+---
+
+
+&lt;!-- Setup chunks --&gt;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# Motivation
+
+.cyan[Why we should study vote switching:]
+
+- Vote switching is a defining procedural mechanism of liberal representative democracy
+--
+
+- .cyan[Accountability:] Voters lend and withdraw support to/from parties in response to parties' performance, agency, or programmatic offers
+--
+
+- Dynamic mechanisms of voter retention, attraction, and defection are inherent to most theories of political competition and voter behavior
+--
+
+- With increasing electoral volatility, understanding patterns of voter de- and realignment is ever more important for understanding party system change
+--
+
+
+.cyan[But vote switching remains understudied in comparative perspective. Why?]
+
+1. Lack of conceptual framework and quantities
+1. Data accessibility, data requirements, and concerns about data quality
+1. Lack of operational framework (i.e., suitable methods)
+
+---
+
+# Summary
+
+.cyan[Part I: Conceptual framework]
+
+.font75[*Getting the most out of comparative vote switching data (Cohen, Krause and Abou-Chadi 2021)*
+
+1. .cyan[A conceptual framework] for studying the multidimensional outcomes of polyadic competition in multiparty systems
+2. .cyan[A newly compiled data set] that marries comparative vote switching data with information on party behavior and party systems in 220+ electoral contexts across 36 OECD countries
+3. .cyan[A statistical model] that renders our conceptual framework operable]
+
+--
+
+.cyan[Part II: Software implementation]
+
+.font75[`voteswitchR`: *Data and methods for analyzing comparative vote switching data (Cohen 2021)*
+
+1. Functions and an interactive GUI for data processing
+2. Functions for model estimation (Bayesian implemenation)
+3. Functions for post-estimation (quantities of interest)]
+
+--
+
+.cyan[Part III: Empirical application] .font75[*(Cohen, Krause and Abou-Chadi 2021)*]
+
+---
+
+class: inverse, mline, center, middle
+
+# PART I: Conceptual framework
+
+---
+
+class: inverse, mline, center, middle
+
+# Approaches to dynyamic multi-party competition
+
+---
+
+# What is comparative vote switching?
+
+#### The macro-level: Tests based on aggregate vote shares
+
+&gt; This approach comes with an inherent tension. On the one hand, theoretical arguments stipulate dyadic or polyadic voter flows -- i.e., expected gains from or losses to (a) specific competitor(s). On the other hand, applied empirical tests usually remain strictly monadic: They involve the analysis of vote shares of one party or party family at a time, either as a function of its own policy strategies or of those of specific competitors.
+Hence, this approach focuses on the evolution of parties' overall electoral support but does not take into account the underlying patterns of vote switching that presumably drive the observed party-level variation.
+
+--
+
+#### The micro-level: Tests based on survey-based vote switching data
+
+&gt; In contrast to 'classical' studies of vote switching that focus on micro-level variation *within* electorates to analyze which voter characteristics predict inter-individual variation in the probability of vote switching from one election to the next, comparative studies of vote switching analyze how contextual variation in parties' policy strategies, agency, or legislative performance predicts party or election-specific *patterns of vote switching* across electoral contexts.
+
+&gt; As such, the study of comparative vote switching is distinct from both micro-level inquiries into the individual determinants of vote switching and from party-level studies of vote share changes: The primary level of explanation and analysis is party-specific or election-specific but the outcome of interest are inter-party voter flows aggregated from individual-level data.
+
+---
+
+# Why do we need comparative vote switching?
+
+#### Limitations of existing approaches
+
+- .cyan[Bird's eye view:] An exclusive focus on aggregate-level outcomes (changes in vote shares)
+- .cyan[Unidimensionality:] An exclusive focus on single parties, party families, or dyads 
+- .cyan[Unidirectionality:] An exclusive focus on dyadic defection
+
+--
+
+#### Consequences
+
+- No direct support for stipulated theoretical mechanisms
+- Risk of ecological fallacies (type I *and* type II errors)
+
+--
+
+#### A framework that adequately overcomes these limitations should...
+
+- ...allow us to theorize and test stipulated micro-mechanisms directly
+- ...avoid ecological fallacies
+- ...offer a comprehensive perspective that captures .cyan[multidimensional trade-offs]
+
+---
+
+# Fallacies in macro-level studies
+
+
+&lt;div class="figure" style="text-align: center"&gt;
+&lt;img src="_presentation_files/figure-html/macro-plots-1.png" alt="Patterns of vote switching that may cause ecological fallacies in macro-level studies." width="100%" /&gt;
+&lt;p class="caption"&gt;Patterns of vote switching that may cause ecological fallacies in macro-level studies.&lt;/p&gt;
+&lt;/div&gt;
+
+---
+
+# Selective foci in comparative vote switching
+
+
+&lt;div class="figure" style="text-align: center"&gt;
+&lt;img src="_presentation_files/figure-html/micro-plots-1.png" alt="Selective foci on specific aspects of vote switching yield different -- and often incomplete -- insights." width="100%" /&gt;
+&lt;p class="caption"&gt;Selective foci on specific aspects of vote switching yield different -- and often incomplete -- insights.&lt;/p&gt;
+&lt;/div&gt;
+
+---
+
+class: inverse, mline, center, middle
+
+# A comprehensive conceptual framework
+
+---
+
+# Building blocks: Voter transition matrices
+
+
+<table class="huxtable" style="border-collapse: collapse; border: 0px; margin-bottom: 2em; margin-top: 2em; ; margin-left: auto; margin-right: auto;  " id="tab:unnamed-chunk-25">
+<caption style="caption-side: bottom; text-align: center;">A voter transition matrix.</caption><col><col><col><col><col><col><col><tr>
+<th style="vertical-align: top; text-align: left; white-space: normal; border-style: solid solid solid solid; border-width: 0pt 0pt 0.4pt 0pt;    padding: 0pt 4pt 4pt 0pt; background-color: rgb(242, 242, 242); font-weight: bold; font-size: 9pt;"></th><th style="vertical-align: top; text-align: center; white-space: normal; border-style: solid solid solid solid; border-width: 0pt 0pt 0.4pt 0pt;    padding: 0pt 4pt 4pt 4pt; background-color: rgb(242, 242, 242); font-weight: bold; font-size: 9pt;">LAB '10</th><th style="vertical-align: top; text-align: center; white-space: normal; border-style: solid solid solid solid; border-width: 0pt 0pt 0.4pt 0pt;    padding: 0pt 4pt 4pt 4pt; background-color: rgb(242, 242, 242); font-weight: bold; font-size: 9pt;">LIB '10</th><th style="vertical-align: top; text-align: center; white-space: normal; border-style: solid solid solid solid; border-width: 0pt 0pt 0.4pt 0pt;    padding: 0pt 4pt 4pt 4pt; background-color: rgb(242, 242, 242); font-weight: bold; font-size: 9pt;">CON '10</th><th style="vertical-align: top; text-align: center; white-space: normal; border-style: solid solid solid solid; border-width: 0pt 0pt 0.4pt 0pt;    padding: 0pt 4pt 4pt 4pt; background-color: rgb(242, 242, 242); font-weight: bold; font-size: 9pt;">OTH '10</th><th style="vertical-align: top; text-align: center; white-space: normal; border-style: solid solid solid solid; border-width: 0pt 0pt 0.4pt 0pt;    padding: 0pt 4pt 4pt 4pt; background-color: rgb(242, 242, 242); font-weight: bold; font-size: 9pt;">NON '10</th><th style="vertical-align: top; text-align: center; white-space: normal; border-style: solid solid solid solid; border-width: 0pt 0pt 0.4pt 0pt;    padding: 0pt 0pt 4pt 4pt; background-color: rgb(242, 242, 242); font-weight: bold; font-size: 9pt;">2005</th></tr>
+<tr>
+<td style="vertical-align: top; text-align: left; white-space: normal; border-style: solid solid solid solid; border-width: 0.4pt 0pt 0pt 0pt;    padding: 4pt 4pt 4pt 0pt; background-color: rgb(242, 242, 242); font-weight: bold; font-size: 9pt;">LAB '05</td><td style="vertical-align: top; text-align: center; white-space: normal; border-style: solid solid solid solid; border-width: 0.4pt 0pt 0pt 0pt;    padding: 4pt 4pt 4pt 4pt; background-color: rgb(242, 242, 242); font-weight: normal; font-size: 9pt;"> 12.9</td><td style="vertical-align: top; text-align: center; white-space: normal; border-style: solid solid solid solid; border-width: 0.4pt 0pt 0pt 0pt;    padding: 4pt 4pt 4pt 4pt; font-weight: normal; font-size: 9pt;">  2.4</td><td style="vertical-align: top; text-align: center; white-space: normal; border-style: solid solid solid solid; border-width: 0.4pt 0pt 0pt 0pt;    padding: 4pt 4pt 4pt 4pt; font-weight: normal; font-size: 9pt;">  2.1</td><td style="vertical-align: top; text-align: center; white-space: normal; border-style: solid solid solid solid; border-width: 0.4pt 0pt 0pt 0pt;    padding: 4pt 4pt 4pt 4pt; font-weight: normal; font-size: 9pt;">  0.7</td><td style="vertical-align: top; text-align: center; white-space: normal; border-style: solid solid solid solid; border-width: 0.4pt 0pt 0pt 0pt;    padding: 4pt 4pt 4pt 4pt; font-weight: normal; font-size: 9pt;">  3.5</td><td style="vertical-align: top; text-align: center; white-space: normal; border-style: solid solid solid solid; border-width: 0.4pt 0pt 0pt 0pt;    padding: 4pt 0pt 4pt 4pt; background-color: rgb(242, 242, 242); font-weight: bold; font-size: 9pt;"> 21.6</td></tr>
+<tr>
+<td style="vertical-align: top; text-align: left; white-space: normal; padding: 4pt 4pt 4pt 0pt; background-color: rgb(242, 242, 242); font-weight: bold; font-size: 9pt;">LIB '05</td><td style="vertical-align: top; text-align: center; white-space: normal; padding: 4pt 4pt 4pt 4pt; font-weight: normal; font-size: 9pt;">  1.2</td><td style="vertical-align: top; text-align: center; white-space: normal; padding: 4pt 4pt 4pt 4pt; background-color: rgb(242, 242, 242); font-weight: normal; font-size: 9pt;">  8.6</td><td style="vertical-align: top; text-align: center; white-space: normal; padding: 4pt 4pt 4pt 4pt; font-weight: normal; font-size: 9pt;">  1.7</td><td style="vertical-align: top; text-align: center; white-space: normal; padding: 4pt 4pt 4pt 4pt; font-weight: normal; font-size: 9pt;">  0.3</td><td style="vertical-align: top; text-align: center; white-space: normal; padding: 4pt 4pt 4pt 4pt; font-weight: normal; font-size: 9pt;">  1.8</td><td style="vertical-align: top; text-align: center; white-space: normal; padding: 4pt 0pt 4pt 4pt; background-color: rgb(242, 242, 242); font-weight: bold; font-size: 9pt;"> 13.5</td></tr>
+<tr>
+<td style="vertical-align: top; text-align: left; white-space: normal; padding: 4pt 4pt 4pt 0pt; background-color: rgb(242, 242, 242); font-weight: bold; font-size: 9pt;">CON '05</td><td style="vertical-align: top; text-align: center; white-space: normal; padding: 4pt 4pt 4pt 4pt; font-weight: normal; font-size: 9pt;">  0.8</td><td style="vertical-align: top; text-align: center; white-space: normal; padding: 4pt 4pt 4pt 4pt; font-weight: normal; font-size: 9pt;">  1.1</td><td style="vertical-align: top; text-align: center; white-space: normal; padding: 4pt 4pt 4pt 4pt; background-color: rgb(242, 242, 242); font-weight: normal; font-size: 9pt;"> 14.8</td><td style="vertical-align: top; text-align: center; white-space: normal; padding: 4pt 4pt 4pt 4pt; font-weight: normal; font-size: 9pt;">  1.0</td><td style="vertical-align: top; text-align: center; white-space: normal; padding: 4pt 4pt 4pt 4pt; font-weight: normal; font-size: 9pt;">  2.2</td><td style="vertical-align: top; text-align: center; white-space: normal; padding: 4pt 0pt 4pt 4pt; background-color: rgb(242, 242, 242); font-weight: bold; font-size: 9pt;"> 19.9</td></tr>
+<tr>
+<td style="vertical-align: top; text-align: left; white-space: normal; padding: 4pt 4pt 4pt 0pt; background-color: rgb(242, 242, 242); font-weight: bold; font-size: 9pt;">OTH '05</td><td style="vertical-align: top; text-align: center; white-space: normal; padding: 4pt 4pt 4pt 4pt; font-weight: normal; font-size: 9pt;">  0.6</td><td style="vertical-align: top; text-align: center; white-space: normal; padding: 4pt 4pt 4pt 4pt; font-weight: normal; font-size: 9pt;">  0.6</td><td style="vertical-align: top; text-align: center; white-space: normal; padding: 4pt 4pt 4pt 4pt; font-weight: normal; font-size: 9pt;">  0.5</td><td style="vertical-align: top; text-align: center; white-space: normal; padding: 4pt 4pt 4pt 4pt; background-color: rgb(242, 242, 242); font-weight: normal; font-size: 9pt;">  3.3</td><td style="vertical-align: top; text-align: center; white-space: normal; padding: 4pt 4pt 4pt 4pt; font-weight: normal; font-size: 9pt;">  1.4</td><td style="vertical-align: top; text-align: center; white-space: normal; padding: 4pt 0pt 4pt 4pt; background-color: rgb(242, 242, 242); font-weight: bold; font-size: 9pt;">  6.4</td></tr>
+<tr>
+<td style="vertical-align: top; text-align: left; white-space: normal; border-style: solid solid solid solid; border-width: 0pt 0pt 0.4pt 0pt;    padding: 4pt 4pt 4pt 0pt; background-color: rgb(242, 242, 242); font-weight: bold; font-size: 9pt;">NON '05</td><td style="vertical-align: top; text-align: center; white-space: normal; border-style: solid solid solid solid; border-width: 0pt 0pt 0.4pt 0pt;    padding: 4pt 4pt 4pt 4pt; font-weight: normal; font-size: 9pt;">  3.5</td><td style="vertical-align: top; text-align: center; white-space: normal; border-style: solid solid solid solid; border-width: 0pt 0pt 0.4pt 0pt;    padding: 4pt 4pt 4pt 4pt; font-weight: normal; font-size: 9pt;">  2.4</td><td style="vertical-align: top; text-align: center; white-space: normal; border-style: solid solid solid solid; border-width: 0pt 0pt 0.4pt 0pt;    padding: 4pt 4pt 4pt 4pt; font-weight: normal; font-size: 9pt;">  4.5</td><td style="vertical-align: top; text-align: center; white-space: normal; border-style: solid solid solid solid; border-width: 0pt 0pt 0.4pt 0pt;    padding: 4pt 4pt 4pt 4pt; font-weight: normal; font-size: 9pt;">  2.3</td><td style="vertical-align: top; text-align: center; white-space: normal; border-style: solid solid solid solid; border-width: 0pt 0pt 0.4pt 0pt;    padding: 4pt 4pt 4pt 4pt; background-color: rgb(242, 242, 242); font-weight: normal; font-size: 9pt;"> 25.9</td><td style="vertical-align: top; text-align: center; white-space: normal; border-style: solid solid solid solid; border-width: 0pt 0pt 0.4pt 0pt;    padding: 4pt 0pt 4pt 4pt; background-color: rgb(242, 242, 242); font-weight: bold; font-size: 9pt;"> 38.6</td></tr>
+<tr>
+<td style="vertical-align: top; text-align: left; white-space: normal; border-style: solid solid solid solid; border-width: 0.4pt 0pt 0pt 0pt;    padding: 4pt 4pt 0pt 0pt; background-color: rgb(242, 242, 242); font-weight: bold; font-size: 9pt;">2010</td><td style="vertical-align: top; text-align: center; white-space: normal; border-style: solid solid solid solid; border-width: 0.4pt 0pt 0pt 0pt;    padding: 4pt 4pt 0pt 4pt; background-color: rgb(242, 242, 242); font-weight: bold; font-size: 9pt;"> 18.9</td><td style="vertical-align: top; text-align: center; white-space: normal; border-style: solid solid solid solid; border-width: 0.4pt 0pt 0pt 0pt;    padding: 4pt 4pt 0pt 4pt; background-color: rgb(242, 242, 242); font-weight: bold; font-size: 9pt;"> 15.0</td><td style="vertical-align: top; text-align: center; white-space: normal; border-style: solid solid solid solid; border-width: 0.4pt 0pt 0pt 0pt;    padding: 4pt 4pt 0pt 4pt; background-color: rgb(242, 242, 242); font-weight: bold; font-size: 9pt;"> 23.5</td><td style="vertical-align: top; text-align: center; white-space: normal; border-style: solid solid solid solid; border-width: 0.4pt 0pt 0pt 0pt;    padding: 4pt 4pt 0pt 4pt; background-color: rgb(242, 242, 242); font-weight: bold; font-size: 9pt;">  7.7</td><td style="vertical-align: top; text-align: center; white-space: normal; border-style: solid solid solid solid; border-width: 0.4pt 0pt 0pt 0pt;    padding: 4pt 4pt 0pt 4pt; background-color: rgb(242, 242, 242); font-weight: bold; font-size: 9pt;"> 34.9</td><td style="vertical-align: top; text-align: center; white-space: normal; border-style: solid solid solid solid; border-width: 0.4pt 0pt 0pt 0pt;    padding: 4pt 0pt 0pt 4pt; background-color: rgb(242, 242, 242); font-weight: bold; font-size: 9pt;">100.0</td></tr>
+</table>
+
+
+#### Cells come in different flavors
+
+1. .cyan[Retention cells], `\(p_{i,i}\)` along the diagonal
+    + `\(p_{1,1}\)` gives percentage of voters retained by Labour
+2. .cyan[Dyadic gains/losses], `\(p_{i,j}\)`, in the off-diagonals
+    + `\(p_{1,2}\)` gives Labour's dyadic gross losses to LibDems
+    + `\(p_{2,1}\)` gives Labour's dyadic gross gains from LibDems
+ 
+---
+
+# Building blocks: Voter transition matrices
+
+
+<table class="huxtable" style="border-collapse: collapse; border: 0px; margin-bottom: 2em; margin-top: 2em; ; margin-left: auto; margin-right: auto;  " id="tab:unnamed-chunk-26">
+<caption style="caption-side: bottom; text-align: center;">A voter transition matrix.</caption><col><col><col><col><col><col><col><tr>
+<th style="vertical-align: top; text-align: left; white-space: normal; border-style: solid solid solid solid; border-width: 0pt 0pt 0.4pt 0pt;    padding: 0pt 4pt 4pt 0pt; background-color: rgb(242, 242, 242); font-weight: bold; font-size: 9pt;"></th><th style="vertical-align: top; text-align: center; white-space: normal; border-style: solid solid solid solid; border-width: 0pt 0pt 0.4pt 0pt;    padding: 0pt 4pt 4pt 4pt; background-color: rgb(242, 242, 242); font-weight: bold; font-size: 9pt;">LAB '10</th><th style="vertical-align: top; text-align: center; white-space: normal; border-style: solid solid solid solid; border-width: 0pt 0pt 0.4pt 0pt;    padding: 0pt 4pt 4pt 4pt; background-color: rgb(242, 242, 242); font-weight: bold; font-size: 9pt;">LIB '10</th><th style="vertical-align: top; text-align: center; white-space: normal; border-style: solid solid solid solid; border-width: 0pt 0pt 0.4pt 0pt;    padding: 0pt 4pt 4pt 4pt; background-color: rgb(242, 242, 242); font-weight: bold; font-size: 9pt;">CON '10</th><th style="vertical-align: top; text-align: center; white-space: normal; border-style: solid solid solid solid; border-width: 0pt 0pt 0.4pt 0pt;    padding: 0pt 4pt 4pt 4pt; background-color: rgb(242, 242, 242); font-weight: bold; font-size: 9pt;">OTH '10</th><th style="vertical-align: top; text-align: center; white-space: normal; border-style: solid solid solid solid; border-width: 0pt 0pt 0.4pt 0pt;    padding: 0pt 4pt 4pt 4pt; background-color: rgb(242, 242, 242); font-weight: bold; font-size: 9pt;">NON '10</th><th style="vertical-align: top; text-align: center; white-space: normal; border-style: solid solid solid solid; border-width: 0pt 0pt 0.4pt 0pt;    padding: 0pt 0pt 4pt 4pt; background-color: rgb(242, 242, 242); font-weight: bold; font-size: 9pt;">2005</th></tr>
+<tr>
+<td style="vertical-align: top; text-align: left; white-space: normal; border-style: solid solid solid solid; border-width: 0.4pt 0pt 0pt 0pt;    padding: 4pt 4pt 4pt 0pt; background-color: rgb(242, 242, 242); font-weight: bold; font-size: 9pt;">LAB '05</td><td style="vertical-align: top; text-align: center; white-space: normal; border-style: solid solid solid solid; border-width: 0.4pt 0pt 0pt 0pt;    padding: 4pt 4pt 4pt 4pt; background-color: rgb(242, 242, 242); font-weight: normal; font-size: 9pt;"> 12.9</td><td style="vertical-align: top; text-align: center; white-space: normal; border-style: solid solid solid solid; border-width: 0.4pt 0pt 0pt 0pt;    padding: 4pt 4pt 4pt 4pt; font-weight: normal; font-size: 9pt;">  2.4</td><td style="vertical-align: top; text-align: center; white-space: normal; border-style: solid solid solid solid; border-width: 0.4pt 0pt 0pt 0pt;    padding: 4pt 4pt 4pt 4pt; font-weight: normal; font-size: 9pt;">  2.1</td><td style="vertical-align: top; text-align: center; white-space: normal; border-style: solid solid solid solid; border-width: 0.4pt 0pt 0pt 0pt;    padding: 4pt 4pt 4pt 4pt; font-weight: normal; font-size: 9pt;">  0.7</td><td style="vertical-align: top; text-align: center; white-space: normal; border-style: solid solid solid solid; border-width: 0.4pt 0pt 0pt 0pt;    padding: 4pt 4pt 4pt 4pt; font-weight: normal; font-size: 9pt;">  3.5</td><td style="vertical-align: top; text-align: center; white-space: normal; border-style: solid solid solid solid; border-width: 0.4pt 0pt 0pt 0pt;    padding: 4pt 0pt 4pt 4pt; background-color: rgb(242, 242, 242); font-weight: bold; font-size: 9pt;"> 21.6</td></tr>
+<tr>
+<td style="vertical-align: top; text-align: left; white-space: normal; padding: 4pt 4pt 4pt 0pt; background-color: rgb(242, 242, 242); font-weight: bold; font-size: 9pt;">LIB '05</td><td style="vertical-align: top; text-align: center; white-space: normal; padding: 4pt 4pt 4pt 4pt; font-weight: normal; font-size: 9pt;">  1.2</td><td style="vertical-align: top; text-align: center; white-space: normal; padding: 4pt 4pt 4pt 4pt; background-color: rgb(242, 242, 242); font-weight: normal; font-size: 9pt;">  8.6</td><td style="vertical-align: top; text-align: center; white-space: normal; padding: 4pt 4pt 4pt 4pt; font-weight: normal; font-size: 9pt;">  1.7</td><td style="vertical-align: top; text-align: center; white-space: normal; padding: 4pt 4pt 4pt 4pt; font-weight: normal; font-size: 9pt;">  0.3</td><td style="vertical-align: top; text-align: center; white-space: normal; padding: 4pt 4pt 4pt 4pt; font-weight: normal; font-size: 9pt;">  1.8</td><td style="vertical-align: top; text-align: center; white-space: normal; padding: 4pt 0pt 4pt 4pt; background-color: rgb(242, 242, 242); font-weight: bold; font-size: 9pt;"> 13.5</td></tr>
+<tr>
+<td style="vertical-align: top; text-align: left; white-space: normal; padding: 4pt 4pt 4pt 0pt; background-color: rgb(242, 242, 242); font-weight: bold; font-size: 9pt;">CON '05</td><td style="vertical-align: top; text-align: center; white-space: normal; padding: 4pt 4pt 4pt 4pt; font-weight: normal; font-size: 9pt;">  0.8</td><td style="vertical-align: top; text-align: center; white-space: normal; padding: 4pt 4pt 4pt 4pt; font-weight: normal; font-size: 9pt;">  1.1</td><td style="vertical-align: top; text-align: center; white-space: normal; padding: 4pt 4pt 4pt 4pt; background-color: rgb(242, 242, 242); font-weight: normal; font-size: 9pt;"> 14.8</td><td style="vertical-align: top; text-align: center; white-space: normal; padding: 4pt 4pt 4pt 4pt; font-weight: normal; font-size: 9pt;">  1.0</td><td style="vertical-align: top; text-align: center; white-space: normal; padding: 4pt 4pt 4pt 4pt; font-weight: normal; font-size: 9pt;">  2.2</td><td style="vertical-align: top; text-align: center; white-space: normal; padding: 4pt 0pt 4pt 4pt; background-color: rgb(242, 242, 242); font-weight: bold; font-size: 9pt;"> 19.9</td></tr>
+<tr>
+<td style="vertical-align: top; text-align: left; white-space: normal; padding: 4pt 4pt 4pt 0pt; background-color: rgb(242, 242, 242); font-weight: bold; font-size: 9pt;">OTH '05</td><td style="vertical-align: top; text-align: center; white-space: normal; padding: 4pt 4pt 4pt 4pt; font-weight: normal; font-size: 9pt;">  0.6</td><td style="vertical-align: top; text-align: center; white-space: normal; padding: 4pt 4pt 4pt 4pt; font-weight: normal; font-size: 9pt;">  0.6</td><td style="vertical-align: top; text-align: center; white-space: normal; padding: 4pt 4pt 4pt 4pt; font-weight: normal; font-size: 9pt;">  0.5</td><td style="vertical-align: top; text-align: center; white-space: normal; padding: 4pt 4pt 4pt 4pt; background-color: rgb(242, 242, 242); font-weight: normal; font-size: 9pt;">  3.3</td><td style="vertical-align: top; text-align: center; white-space: normal; padding: 4pt 4pt 4pt 4pt; font-weight: normal; font-size: 9pt;">  1.4</td><td style="vertical-align: top; text-align: center; white-space: normal; padding: 4pt 0pt 4pt 4pt; background-color: rgb(242, 242, 242); font-weight: bold; font-size: 9pt;">  6.4</td></tr>
+<tr>
+<td style="vertical-align: top; text-align: left; white-space: normal; border-style: solid solid solid solid; border-width: 0pt 0pt 0.4pt 0pt;    padding: 4pt 4pt 4pt 0pt; background-color: rgb(242, 242, 242); font-weight: bold; font-size: 9pt;">NON '05</td><td style="vertical-align: top; text-align: center; white-space: normal; border-style: solid solid solid solid; border-width: 0pt 0pt 0.4pt 0pt;    padding: 4pt 4pt 4pt 4pt; font-weight: normal; font-size: 9pt;">  3.5</td><td style="vertical-align: top; text-align: center; white-space: normal; border-style: solid solid solid solid; border-width: 0pt 0pt 0.4pt 0pt;    padding: 4pt 4pt 4pt 4pt; font-weight: normal; font-size: 9pt;">  2.4</td><td style="vertical-align: top; text-align: center; white-space: normal; border-style: solid solid solid solid; border-width: 0pt 0pt 0.4pt 0pt;    padding: 4pt 4pt 4pt 4pt; font-weight: normal; font-size: 9pt;">  4.5</td><td style="vertical-align: top; text-align: center; white-space: normal; border-style: solid solid solid solid; border-width: 0pt 0pt 0.4pt 0pt;    padding: 4pt 4pt 4pt 4pt; font-weight: normal; font-size: 9pt;">  2.3</td><td style="vertical-align: top; text-align: center; white-space: normal; border-style: solid solid solid solid; border-width: 0pt 0pt 0.4pt 0pt;    padding: 4pt 4pt 4pt 4pt; background-color: rgb(242, 242, 242); font-weight: normal; font-size: 9pt;"> 25.9</td><td style="vertical-align: top; text-align: center; white-space: normal; border-style: solid solid solid solid; border-width: 0pt 0pt 0.4pt 0pt;    padding: 4pt 0pt 4pt 4pt; background-color: rgb(242, 242, 242); font-weight: bold; font-size: 9pt;"> 38.6</td></tr>
+<tr>
+<td style="vertical-align: top; text-align: left; white-space: normal; border-style: solid solid solid solid; border-width: 0.4pt 0pt 0pt 0pt;    padding: 4pt 4pt 0pt 0pt; background-color: rgb(242, 242, 242); font-weight: bold; font-size: 9pt;">2010</td><td style="vertical-align: top; text-align: center; white-space: normal; border-style: solid solid solid solid; border-width: 0.4pt 0pt 0pt 0pt;    padding: 4pt 4pt 0pt 4pt; background-color: rgb(242, 242, 242); font-weight: bold; font-size: 9pt;"> 18.9</td><td style="vertical-align: top; text-align: center; white-space: normal; border-style: solid solid solid solid; border-width: 0.4pt 0pt 0pt 0pt;    padding: 4pt 4pt 0pt 4pt; background-color: rgb(242, 242, 242); font-weight: bold; font-size: 9pt;"> 15.0</td><td style="vertical-align: top; text-align: center; white-space: normal; border-style: solid solid solid solid; border-width: 0.4pt 0pt 0pt 0pt;    padding: 4pt 4pt 0pt 4pt; background-color: rgb(242, 242, 242); font-weight: bold; font-size: 9pt;"> 23.5</td><td style="vertical-align: top; text-align: center; white-space: normal; border-style: solid solid solid solid; border-width: 0.4pt 0pt 0pt 0pt;    padding: 4pt 4pt 0pt 4pt; background-color: rgb(242, 242, 242); font-weight: bold; font-size: 9pt;">  7.7</td><td style="vertical-align: top; text-align: center; white-space: normal; border-style: solid solid solid solid; border-width: 0.4pt 0pt 0pt 0pt;    padding: 4pt 4pt 0pt 4pt; background-color: rgb(242, 242, 242); font-weight: bold; font-size: 9pt;"> 34.9</td><td style="vertical-align: top; text-align: center; white-space: normal; border-style: solid solid solid solid; border-width: 0.4pt 0pt 0pt 0pt;    padding: 4pt 0pt 0pt 4pt; background-color: rgb(242, 242, 242); font-weight: bold; font-size: 9pt;">100.0</td></tr>
+</table>
+
+
+#### Basic quantities of interest
+
+1. .cyan[Party-specific retention rates]; e.g., `\(p_{1,1}\)` gives percentage of voters retained by Labour
+2. .cyan[Dyadic trade volumes], `\(V_{i,j} = p_{j,i} + p_{i,j}\)`
+    + `\(p_{2,1} + p_{1,2}\)` gives dyadic trade volumes between Labour and LibDems
+3. .cyan[Dyadic trade balances], `\(V_{i,j} = p_{j,i} - p_{i,j}\)`
+  + `\(p_{2,1} - p_{1,2}\)` gives Labour dyadic trade balances with LibDems   
+
+---
+
+# Building blocks: Voter transition matrices
+
+
+<table class="huxtable" style="border-collapse: collapse; border: 0px; margin-bottom: 2em; margin-top: 2em; ; margin-left: auto; margin-right: auto;  " id="tab:unnamed-chunk-27">
+<caption style="caption-side: bottom; text-align: center;">A voter transition matrix.</caption><col><col><col><col><col><col><col><tr>
+<th style="vertical-align: top; text-align: left; white-space: normal; border-style: solid solid solid solid; border-width: 0pt 0pt 0.4pt 0pt;    padding: 0pt 4pt 4pt 0pt; background-color: rgb(242, 242, 242); font-weight: bold; font-size: 9pt;"></th><th style="vertical-align: top; text-align: center; white-space: normal; border-style: solid solid solid solid; border-width: 0pt 0pt 0.4pt 0pt;    padding: 0pt 4pt 4pt 4pt; background-color: rgb(242, 242, 242); font-weight: bold; font-size: 9pt;">LAB '10</th><th style="vertical-align: top; text-align: center; white-space: normal; border-style: solid solid solid solid; border-width: 0pt 0pt 0.4pt 0pt;    padding: 0pt 4pt 4pt 4pt; background-color: rgb(242, 242, 242); font-weight: bold; font-size: 9pt;">LIB '10</th><th style="vertical-align: top; text-align: center; white-space: normal; border-style: solid solid solid solid; border-width: 0pt 0pt 0.4pt 0pt;    padding: 0pt 4pt 4pt 4pt; background-color: rgb(242, 242, 242); font-weight: bold; font-size: 9pt;">CON '10</th><th style="vertical-align: top; text-align: center; white-space: normal; border-style: solid solid solid solid; border-width: 0pt 0pt 0.4pt 0pt;    padding: 0pt 4pt 4pt 4pt; background-color: rgb(242, 242, 242); font-weight: bold; font-size: 9pt;">OTH '10</th><th style="vertical-align: top; text-align: center; white-space: normal; border-style: solid solid solid solid; border-width: 0pt 0pt 0.4pt 0pt;    padding: 0pt 4pt 4pt 4pt; background-color: rgb(242, 242, 242); font-weight: bold; font-size: 9pt;">NON '10</th><th style="vertical-align: top; text-align: center; white-space: normal; border-style: solid solid solid solid; border-width: 0pt 0pt 0.4pt 0pt;    padding: 0pt 0pt 4pt 4pt; background-color: rgb(242, 242, 242); font-weight: bold; font-size: 9pt;">2005</th></tr>
+<tr>
+<td style="vertical-align: top; text-align: left; white-space: normal; border-style: solid solid solid solid; border-width: 0.4pt 0pt 0pt 0pt;    padding: 4pt 4pt 4pt 0pt; background-color: rgb(242, 242, 242); font-weight: bold; font-size: 9pt;">LAB '05</td><td style="vertical-align: top; text-align: center; white-space: normal; border-style: solid solid solid solid; border-width: 0.4pt 0pt 0pt 0pt;    padding: 4pt 4pt 4pt 4pt; background-color: rgb(242, 242, 242); font-weight: normal; font-size: 9pt;"> 12.9</td><td style="vertical-align: top; text-align: center; white-space: normal; border-style: solid solid solid solid; border-width: 0.4pt 0pt 0pt 0pt;    padding: 4pt 4pt 4pt 4pt; font-weight: normal; font-size: 9pt;">  2.4</td><td style="vertical-align: top; text-align: center; white-space: normal; border-style: solid solid solid solid; border-width: 0.4pt 0pt 0pt 0pt;    padding: 4pt 4pt 4pt 4pt; font-weight: normal; font-size: 9pt;">  2.1</td><td style="vertical-align: top; text-align: center; white-space: normal; border-style: solid solid solid solid; border-width: 0.4pt 0pt 0pt 0pt;    padding: 4pt 4pt 4pt 4pt; font-weight: normal; font-size: 9pt;">  0.7</td><td style="vertical-align: top; text-align: center; white-space: normal; border-style: solid solid solid solid; border-width: 0.4pt 0pt 0pt 0pt;    padding: 4pt 4pt 4pt 4pt; font-weight: normal; font-size: 9pt;">  3.5</td><td style="vertical-align: top; text-align: center; white-space: normal; border-style: solid solid solid solid; border-width: 0.4pt 0pt 0pt 0pt;    padding: 4pt 0pt 4pt 4pt; background-color: rgb(242, 242, 242); font-weight: bold; font-size: 9pt;"> 21.6</td></tr>
+<tr>
+<td style="vertical-align: top; text-align: left; white-space: normal; padding: 4pt 4pt 4pt 0pt; background-color: rgb(242, 242, 242); font-weight: bold; font-size: 9pt;">LIB '05</td><td style="vertical-align: top; text-align: center; white-space: normal; padding: 4pt 4pt 4pt 4pt; font-weight: normal; font-size: 9pt;">  1.2</td><td style="vertical-align: top; text-align: center; white-space: normal; padding: 4pt 4pt 4pt 4pt; background-color: rgb(242, 242, 242); font-weight: normal; font-size: 9pt;">  8.6</td><td style="vertical-align: top; text-align: center; white-space: normal; padding: 4pt 4pt 4pt 4pt; font-weight: normal; font-size: 9pt;">  1.7</td><td style="vertical-align: top; text-align: center; white-space: normal; padding: 4pt 4pt 4pt 4pt; font-weight: normal; font-size: 9pt;">  0.3</td><td style="vertical-align: top; text-align: center; white-space: normal; padding: 4pt 4pt 4pt 4pt; font-weight: normal; font-size: 9pt;">  1.8</td><td style="vertical-align: top; text-align: center; white-space: normal; padding: 4pt 0pt 4pt 4pt; background-color: rgb(242, 242, 242); font-weight: bold; font-size: 9pt;"> 13.5</td></tr>
+<tr>
+<td style="vertical-align: top; text-align: left; white-space: normal; padding: 4pt 4pt 4pt 0pt; background-color: rgb(242, 242, 242); font-weight: bold; font-size: 9pt;">CON '05</td><td style="vertical-align: top; text-align: center; white-space: normal; padding: 4pt 4pt 4pt 4pt; font-weight: normal; font-size: 9pt;">  0.8</td><td style="vertical-align: top; text-align: center; white-space: normal; padding: 4pt 4pt 4pt 4pt; font-weight: normal; font-size: 9pt;">  1.1</td><td style="vertical-align: top; text-align: center; white-space: normal; padding: 4pt 4pt 4pt 4pt; background-color: rgb(242, 242, 242); font-weight: normal; font-size: 9pt;"> 14.8</td><td style="vertical-align: top; text-align: center; white-space: normal; padding: 4pt 4pt 4pt 4pt; font-weight: normal; font-size: 9pt;">  1.0</td><td style="vertical-align: top; text-align: center; white-space: normal; padding: 4pt 4pt 4pt 4pt; font-weight: normal; font-size: 9pt;">  2.2</td><td style="vertical-align: top; text-align: center; white-space: normal; padding: 4pt 0pt 4pt 4pt; background-color: rgb(242, 242, 242); font-weight: bold; font-size: 9pt;"> 19.9</td></tr>
+<tr>
+<td style="vertical-align: top; text-align: left; white-space: normal; padding: 4pt 4pt 4pt 0pt; background-color: rgb(242, 242, 242); font-weight: bold; font-size: 9pt;">OTH '05</td><td style="vertical-align: top; text-align: center; white-space: normal; padding: 4pt 4pt 4pt 4pt; font-weight: normal; font-size: 9pt;">  0.6</td><td style="vertical-align: top; text-align: center; white-space: normal; padding: 4pt 4pt 4pt 4pt; font-weight: normal; font-size: 9pt;">  0.6</td><td style="vertical-align: top; text-align: center; white-space: normal; padding: 4pt 4pt 4pt 4pt; font-weight: normal; font-size: 9pt;">  0.5</td><td style="vertical-align: top; text-align: center; white-space: normal; padding: 4pt 4pt 4pt 4pt; background-color: rgb(242, 242, 242); font-weight: normal; font-size: 9pt;">  3.3</td><td style="vertical-align: top; text-align: center; white-space: normal; padding: 4pt 4pt 4pt 4pt; font-weight: normal; font-size: 9pt;">  1.4</td><td style="vertical-align: top; text-align: center; white-space: normal; padding: 4pt 0pt 4pt 4pt; background-color: rgb(242, 242, 242); font-weight: bold; font-size: 9pt;">  6.4</td></tr>
+<tr>
+<td style="vertical-align: top; text-align: left; white-space: normal; border-style: solid solid solid solid; border-width: 0pt 0pt 0.4pt 0pt;    padding: 4pt 4pt 4pt 0pt; background-color: rgb(242, 242, 242); font-weight: bold; font-size: 9pt;">NON '05</td><td style="vertical-align: top; text-align: center; white-space: normal; border-style: solid solid solid solid; border-width: 0pt 0pt 0.4pt 0pt;    padding: 4pt 4pt 4pt 4pt; font-weight: normal; font-size: 9pt;">  3.5</td><td style="vertical-align: top; text-align: center; white-space: normal; border-style: solid solid solid solid; border-width: 0pt 0pt 0.4pt 0pt;    padding: 4pt 4pt 4pt 4pt; font-weight: normal; font-size: 9pt;">  2.4</td><td style="vertical-align: top; text-align: center; white-space: normal; border-style: solid solid solid solid; border-width: 0pt 0pt 0.4pt 0pt;    padding: 4pt 4pt 4pt 4pt; font-weight: normal; font-size: 9pt;">  4.5</td><td style="vertical-align: top; text-align: center; white-space: normal; border-style: solid solid solid solid; border-width: 0pt 0pt 0.4pt 0pt;    padding: 4pt 4pt 4pt 4pt; font-weight: normal; font-size: 9pt;">  2.3</td><td style="vertical-align: top; text-align: center; white-space: normal; border-style: solid solid solid solid; border-width: 0pt 0pt 0.4pt 0pt;    padding: 4pt 4pt 4pt 4pt; background-color: rgb(242, 242, 242); font-weight: normal; font-size: 9pt;"> 25.9</td><td style="vertical-align: top; text-align: center; white-space: normal; border-style: solid solid solid solid; border-width: 0pt 0pt 0.4pt 0pt;    padding: 4pt 0pt 4pt 4pt; background-color: rgb(242, 242, 242); font-weight: bold; font-size: 9pt;"> 38.6</td></tr>
+<tr>
+<td style="vertical-align: top; text-align: left; white-space: normal; border-style: solid solid solid solid; border-width: 0.4pt 0pt 0pt 0pt;    padding: 4pt 4pt 0pt 0pt; background-color: rgb(242, 242, 242); font-weight: bold; font-size: 9pt;">2010</td><td style="vertical-align: top; text-align: center; white-space: normal; border-style: solid solid solid solid; border-width: 0.4pt 0pt 0pt 0pt;    padding: 4pt 4pt 0pt 4pt; background-color: rgb(242, 242, 242); font-weight: bold; font-size: 9pt;"> 18.9</td><td style="vertical-align: top; text-align: center; white-space: normal; border-style: solid solid solid solid; border-width: 0.4pt 0pt 0pt 0pt;    padding: 4pt 4pt 0pt 4pt; background-color: rgb(242, 242, 242); font-weight: bold; font-size: 9pt;"> 15.0</td><td style="vertical-align: top; text-align: center; white-space: normal; border-style: solid solid solid solid; border-width: 0.4pt 0pt 0pt 0pt;    padding: 4pt 4pt 0pt 4pt; background-color: rgb(242, 242, 242); font-weight: bold; font-size: 9pt;"> 23.5</td><td style="vertical-align: top; text-align: center; white-space: normal; border-style: solid solid solid solid; border-width: 0.4pt 0pt 0pt 0pt;    padding: 4pt 4pt 0pt 4pt; background-color: rgb(242, 242, 242); font-weight: bold; font-size: 9pt;">  7.7</td><td style="vertical-align: top; text-align: center; white-space: normal; border-style: solid solid solid solid; border-width: 0.4pt 0pt 0pt 0pt;    padding: 4pt 4pt 0pt 4pt; background-color: rgb(242, 242, 242); font-weight: bold; font-size: 9pt;"> 34.9</td><td style="vertical-align: top; text-align: center; white-space: normal; border-style: solid solid solid solid; border-width: 0.4pt 0pt 0pt 0pt;    padding: 4pt 0pt 0pt 4pt; background-color: rgb(242, 242, 242); font-weight: bold; font-size: 9pt;">100.0</td></tr>
+</table>
+
+
+#### Derived quantities of interest: Aggregate and normalize as needed
+
+Let our quantity of interest be .cyan[government parties'] trade balances with .cyan[opposition parties], .cyan[relative to their own support base at t - 1]:
+
+`$$\text{QOI} = \frac{100 \times \sum_{j = 2}^{4} p_{j, 1} -  p_{1, j}}{\sum_{k = 1}^{5} p_{1, k}} = \frac{100 \times (2.6 - 5.2)}{21.6} \approx 12.0$$`
+
+
+---
+
+class: inverse, mline, center, middle
+
+# Data
+
+---
+
+# Data base
+
+A newly compiled data set:
+
+- 232 post-election surveys (37 TEV, 100 CSES 2-5, 95 NES) across 36 EU and OECD countries
+- Vote recall data at `\(t\)` and `\(t-1\)` for 477257 respondents
+--
+
+- For 1547 party-by-election observations (416 parties), we mapped vote choices onto party IDs from the .cyan[Manifesto Project] and election IDs from .cyan[ParlGov]
+--
+
+- This enables first-time tests of various theories of dynamic voter reactions to parties' strategies, leadership, and agency and to electoral context characteristics in comparative perspective
+
+---
+
+# Data coverage
+
+&lt;p align="center"&gt;
+  &lt;iframe width="1200" height="480" src="_manuscript_files/figure-latex/data-set-viz-1.pdf" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen&gt;&lt;/iframe&gt;
+  &lt;br&gt;  
+  .font60[Circles: Electoral contexts for which post-election survey data has been collected and mapped. Numbers: Mapped parties included per election.]
+&lt;/p&gt;
+
+---
+
+
+# Data processing routine (HIMRA)
+
+#### From election-specific surveys to reliable voter transition matrices
+
+
+1. .cyan[Harmonization:] Harmonize formats of turnout/vote choice items and auxiliary variables
+
+--
+
+2. .cyan[Imputation:] Impute missing values using hot deck imputation/MICE
+
+--
+
+3. .cyan[Mapping:] Map vote choice information to external party + election IDs
+
+--
+
+4. .cyan[Raking:] Reweights cell counts such that row-wise and column-wise sums reflect true marginals
+
+--
+
+5. .cyan[Aggregation:]
+
+    1. Retrieve all party-specific cell counts of election-specific transition matrices
+    2. Aggregate party-specific counts according to a substantively meaningful scheme
+
+---
+
+
+class: inverse, mline, center, middle
+
+# Statistical Framework
+
+---
+
+# Mixed Aggregate MNL Model with Varying Choice Sets
+
+### Description
+.font80[
+- MAVCL models latent election-level .cyan[cell proportions], `\(\Pr(y_{j} = c)\)`, derived as average micro-level .cyan[choice probabilities], based on from HIMRA'd cell counts, `\(w_{jc}\)`
+- Election-cell-specific random effects capture variation of interest
+- Party system heterogeneity yields election-specific choice sets `\(S_j = \{1,...,C\}\)`
+    + some outcomes categories `\(c\)` will be deterministically empty
+    + accommodated in a modified softmax link function (see Yamamoto 2014)
+]
+
+### Formal notation
+
+.font80[
+- Linear component: `\(\mu_{jc} = \alpha_c + \mathbf{x}_j^{\prime} \beta_c + \nu_{jc} \text{  for each  } c \in S_{j}\)`
+- Link function: `\(\overline{\Pr(y_{j_{[i]}} = c | \mathbf{x}_j)} = \frac{\exp(\mu_{jc})}{\sum_{c \in S_{j}} \exp(\mu_{jc})}\)`
+- Likelihood: `\(\log L = \sum_{j=1}^{J} \sum_{c \in S_{j}} w_{jc} \log \Pr(y_{j} = c | \mathbf{x}_j)\)`, where `\(w_{jc}\)` serve as frequency weights
+]
+
+---
+
+class: inverse, mline, center, middle
+
+# PART II: Software Implementation
+
+---
+
+# `voteswitchR`
+
+&lt;p align="center"&gt;
+  &lt;iframe width="800" height="520" src="_presentation_files/help-files/voteswitchR-package.html" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen&gt;&lt;/iframe&gt;
+&lt;/p&gt;
+
+---
+
+class: inverse, mline, center, middle
+
+# Data processing
+
+---
+
+# `voteswitchR::build_data_file`
+
+&lt;p align="center"&gt;
+  &lt;iframe width="800" height="360" src="_presentation_files/help-files/build_data_file.html" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen&gt;&lt;/iframe&gt;
+&lt;/p&gt;
+
+.cyan[Use:]
+
+
+```r
+voteswitchR::build_data_file()
+```
+
+---
+
+# `voteswitchR::build_data_file`
+
+##### Objects stored in `data_file`
+
+
+```r
+names(data_file)
+```
+
+```
+## [1] "info_aux"           "data"               "switches"          
+## [4] "raked_switches"     "switches_imp"       "raked_switches_imp"
+```
+
+---
+
+# `voteswitchR::build_data_file`
+
+### A glimpse at `raked_switches_imp[[1]]`
+
+
+<div id="htmlwidget-6fb58876862dbcd20e02" style="width:100%;height:auto;" class="datatables html-widget"></div>
+<script type="application/json" data-for="htmlwidget-6fb58876862dbcd20e02">{"x":{"filter":"none","vertical":false,"data":[["1","2","3","4","5","6","7","8","9","10","11","12","13","14","15","16","17"],["DE-2017-09","DE-2017-09","DE-2017-09","DE-2017-09","DE-2017-09","DE-2017-09","DE-2017-09","DE-2017-09","DE-2017-09","DE-2017-09","DE-2017-09","DE-2017-09","DE-2017-09","DE-2017-09","DE-2017-09","DE-2017-09","DE-2017-09"],[5,5,5,5,1,2,3,4,5,6,7,98,99,5,5,5,5],[1,2,3,4,5,5,5,5,5,5,5,5,5,6,7,98,99],[14.46,5.79,23.14,67.35,6.15,3.44,29.35,12.58,363.45,6.88,1.92,4.86,78.33,56.7,0.55,6.89,59.84],[2042,2042,2042,2042,2042,2042,2042,2042,2042,2042,2042,2042,2042,2042,2042,2042,2042]],"container":"<table class=\"compact\">\n  <thead>\n    <tr>\n      <th> <\/th>\n      <th>elec_id<\/th>\n      <th>switch_from<\/th>\n      <th>switch_to<\/th>\n      <th>weights<\/th>\n      <th>n<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"pageLength":9,"initComplete":"function(settings, json) {\n$(this.api().table().container()).css({'font-size': '75%'});\n}","columnDefs":[{"className":"dt-right","targets":[2,3,4,5]},{"orderable":false,"targets":0}],"order":[],"autoWidth":false,"orderClasses":false,"lengthMenu":[9,10,25,50,100]}},"evals":["options.initComplete"],"jsHooks":[]}</script>
+
+---
+
+# `voteswitchR::mappings`
+
+### Mappings
+
+
+
+<div id="htmlwidget-11fc9568e76a2da134eb" style="width:100%;height:auto;" class="datatables html-widget"></div>
+<script type="application/json" data-for="htmlwidget-11fc9568e76a2da134eb">{"x":{"filter":"none","vertical":false,"data":[["1","2","3","4","5","6","7"],["DE-2017-09","DE-2017-09","DE-2017-09","DE-2017-09","DE-2017-09","DE-2017-09","DE-2017-09"],[1,2,3,4,5,6,7],[41113,41223,41320,41420,41521,41953,null],["90/Greens","LINKE","SPD","FDP","CDU/CSU","AfD","NPD"],["eco","lef","soc","lib","mrp","nat","nat"]],"container":"<table class=\"compact\">\n  <thead>\n    <tr>\n      <th> <\/th>\n      <th>elec_id<\/th>\n      <th>stack<\/th>\n      <th>party<\/th>\n      <th>partyabbrev<\/th>\n      <th>parfam_harmonized<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"pageLength":7,"initComplete":"function(settings, json) {\n$(this.api().table().container()).css({'font-size': '75%'});\n}","columnDefs":[{"className":"dt-right","targets":[2,3]},{"orderable":false,"targets":0}],"order":[],"autoWidth":false,"orderClasses":false,"lengthMenu":[7,10,25,50,100]}},"evals":["options.initComplete"],"jsHooks":[]}</script>
+
+---
+
+# Side note: Raking and data validity
+
+
+
+
+
+&lt;img src="_presentation_files/figure-html/unnamed-chunk-28-1.png" width="65%" style="display: block; margin: auto;" /&gt;
+
+---
+
+# `voteswitchR::recode_switches`
+
+
+```r
+mappings &lt;- voteswitchR::mappings %&gt;%
+  dplyr::mutate(
+    outcome = case_when(
+      parfam_harmonized %in% c("mrp", "lib") ~ "mrp",
+      parfam_harmonized %in% 
+        c("", NA_character_, "agr", "div", "eth", "sip") ~ "oth",
+      TRUE ~ parfam_harmonized
+    )
+  )
+```
+
+--
+
+
+```r
+mappings_elec &lt;- voteswitchR::recode_switches(
+  data_file$raked_switches_imp[[1]],
+  mappings = mappings,
+  switch_factor = "outcome",
+  type = "elections"
+)
+```
+
+---
+
+# `voteswitchR::recode_switches`
+
+
+```r
+names(mappings_elec)
+```
+
+```
+## [1] "data"        "y_names"     "y_structure"
+```
+
+--
+
+
+```r
+mappings_elec$y_structure$eco
+```
+<div id="htmlwidget-135e787c185b9938e51a" style="width:100%;height:auto;" class="datatables html-widget"></div>
+<script type="application/json" data-for="htmlwidget-135e787c185b9938e51a">{"x":{"filter":"none","vertical":false,"data":[["1","2","3","4","5","6","7","8","9","10","11","12","13","14","15","16","17","18","19","20","21","22","23","24","25","26","27","28","29","30","31","32","33","34","35","36","37","38","39","40","41","42","43","44","45","46","47","48","49"],["eco","eco","eco","eco","eco","eco","eco","eco","eco","eco","eco","eco","eco","eco","eco","eco","eco","eco","eco","eco","eco","eco","eco","eco","eco","eco","eco","eco","eco","eco","eco","eco","eco","eco","eco","eco","eco","eco","eco","eco","eco","eco","eco","eco","eco","eco","eco","eco","eco"],["eco_eco","eco_lef","eco_mrp","eco_nat","eco_non","eco_oth","eco_soc","lef_eco","lef_lef","lef_mrp","lef_nat","lef_non","lef_oth","lef_soc","mrp_eco","mrp_lef","mrp_mrp","mrp_nat","mrp_non","mrp_oth","mrp_soc","nat_eco","nat_lef","nat_mrp","nat_nat","nat_non","nat_oth","nat_soc","non_eco","non_lef","non_mrp","non_nat","non_non","non_oth","non_soc","oth_eco","oth_lef","oth_mrp","oth_nat","oth_non","oth_oth","oth_soc","soc_eco","soc_lef","soc_mrp","soc_nat","soc_non","soc_oth","soc_soc"],["retain","loss","loss","loss","loss","loss","loss","gain","resid","resid","resid","resid","resid","resid","gain","resid","resid","resid","resid","resid","resid","gain","resid","resid","resid","resid","resid","resid","gain","resid","resid","resid","resid","resid","resid","gain","resid","resid","resid","resid","resid","resid","gain","resid","resid","resid","resid","resid","resid"],[null,"lef","mrp","nat","non","oth","soc","lef",null,null,null,null,null,null,"mrp",null,null,null,null,null,null,"nat",null,null,null,null,null,null,"non",null,null,null,null,null,null,"oth",null,null,null,null,null,null,"soc",null,null,null,null,null,null],[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49]],"container":"<table class=\"compact\">\n  <thead>\n    <tr>\n      <th> <\/th>\n      <th>cat<\/th>\n      <th>switch<\/th>\n      <th>type<\/th>\n      <th>dyad<\/th>\n      <th>pos<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"pageLength":7,"initComplete":"function(settings, json) {\n$(this.api().table().container()).css({'font-size': '75%'});\n}","columnDefs":[{"className":"dt-right","targets":5},{"orderable":false,"targets":0}],"order":[],"autoWidth":false,"orderClasses":false,"lengthMenu":[7,10,25,50,100]}},"evals":["options.initComplete"],"jsHooks":[]}</script>
+
+---
+
+class: inverse, mline, center, middle
+
+# Estimation
+
+---
+
+# `voteswitchR::run_mavcl`
+
+&lt;p align="center"&gt;
+  &lt;iframe width="800" height="520" src="_presentation_files/help-files/run_mavcl.html" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen&gt;&lt;/iframe&gt;
+&lt;/p&gt;
+
+
+---
+
+# `voteswitchR::run_mavcl`
+
+
+```r
+mavcl_est &lt;- voteswitchR::run_mavcl(
+  data = data_elec,
+  y_names = mappings_elec[[1]]$y_names,
+  null_model = FALSE,
+  main_predictor = "forced.mp.dist.rile_logit",
+  predictor_continuous = TRUE,
+  moderator = NULL,
+  moderator_continuous = FALSE,
+  other_covariates = "iso2c",
+  iter = 3000L,
+  warmup = 2000L,
+  thin = 2L,
+  chains = 2L,
+  cores = 2L,
+  seed = 20211011L
+) 
+```
+
+---
+
+class: inverse, mline, center, middle
+
+# Post-estimation: Quantities of interest
+
+---
+
+# `voteswitchR::compute_qoi`
+
+&lt;p align="center"&gt;
+  &lt;iframe width="800" height="520" src="_presentation_files/help-files/compute_qoi.html" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen&gt;&lt;/iframe&gt;
+&lt;/p&gt;
+
+---
+
+# `voteswitchR::compute_qoi`
+
+
+
+---
+
+# `voteswitchR::compute_qoi`
+
+
+
+```r
+names(mavcl_qoi_mrp)
+```
+
+```
+## [1] "conditional_expectation" "average_marginal_effect"
+## [3] "predictor_sequence"
+```
+--
+
+
+```r
+names(mavcl_qoi_mrp$conditional_expectation)
+```
+
+```
+## [1] "losses"          "gains"           "balance"         "volume"         
+## [5] "retention"       "dyadic_losses"   "dyadic_gains"    "dyadic_balances"
+## [9] "dyadic_volumes"
+```
+--
+
+
+```r
+names(mavcl_qoi_mrp$conditional_expectation$dyadic_balances)
+```
+
+```
+## [1] "eco" "lef" "non" "oth" "rrp" "soc"
+```
+
+---
+
+class: inverse, mline, center, middle
+
+# PART III: Empirical Application
+
+---
+
+# Mainstream Party Convergence
+
+- .cyan[Positional similarity] of mainstream left and right parties has often been assumed to
+  - a) reduce the electoral support for mainstream parties
+  - b) facilitate the rise of new challenger parties .font75[[Downs 1956; Katz &amp; Mair 1995; Kitschelt 1995]]
+
+
+- .cyan[Convergence hypothesis] has been the ground for numerous empirical studies in the area of party competition .font75[[Green 2007; Evans &amp; Tilley 2012; Wagner 2012; Abou-Chadi &amp; Orlowski 2016; Krause 2020]]
+
+- Special focus: rise of the radical right .font75[[Arzheimer and Carter 2006; Kitschelt 2007; Spies &amp; Franzmann 2011]]
+
+---
+
+# Mainstream Party Convergence
+
+- .cyan[Assumptions]:
+  - Convergence leads to decreasing vote shares for mainstream parties
+  - These decreases are caused by voters defecting to challenger parties or the non-voter pool
+  - These losses are not compensated by corresponding vote gains
+  - Both mainstream party groups are affected equally
+
+
+- Little comparative .cyan[empirical evidence], but see .font75[[Spoon &amp; Klüver 2020]]:
+  - Positional similarity leads to more voters defecting from the mainstream party camp to other parties (unidirectional flows between camps)
+
+
+- .cyan[Open Questions]:
+  1. Do losses outweigh gains leading to negative trade balances?
+  2. Which challenger parties benefit (most) from losses?
+  3. Are the mainstream left and the mainstream right similarly affected?
+
+
+
+
+
+
+
+---
+
+# Mainstream party camp, overall polyadic vote switching
+
+&lt;img src="_presentation_files/figure-html/big-pic-1.png" width="90%" style="display: block; margin: auto;" /&gt;
+
+---
+
+# Mainstream party camp, dyadic vote switching
+
+&lt;img src="_presentation_files/figure-html/big-pic-disagg-1.png" width="90%" style="display: block; margin: auto;" /&gt;
+
+---
+
+# Trade balances for mainstream right parties
+
+&lt;img src="_presentation_files/figure-html/mrp-1.png" width="90%" style="display: block; margin: auto;" /&gt;
+
+---
+
+# Trade balances for mainstream left parties
+
+&lt;img src="_presentation_files/figure-html/mlp-1.png" width="90%" style="display: block; margin: auto;" /&gt;
+
+---
+
+class: inverse, mline, center, middle
+
+# Summary and 0utlook
+
+---
+
+# Summary
+
+- The increasing volatility in voters' allegiances to political parties and the corresponding rapid transformation of Western party system confronts parties with major challenges
+
+--
+
+- Understanding the payoffs of parties' responses to these challenges requires a dynamic framework that allows us to take into account the multidimensional trade-offs parties face
+
+--
+
+- Toward this end, we have introduced:
+
+    - a conceptual framework for studying dynamic polyadic competition based on voter flows
+    - a newly compiled data set
+    - a statistical method that renders this framework operable
+    - an R package that will eventually allow everyone to implement this
+
+---
+   
+# Outlook
+
+- Updated working paper coming soon
+- Beta version of `voteswitchR` available upon request
+- Inclusion of new surveys and mappings on a rolling basis
+- Straightforward model extensions to party-electorates and electorate subgroups
+- Plotting functions to be added
+
+---
+
+class: inverse, center, middle,title-slide
+
+# Thank you!
+
+## Your feedback is highly appreciated.
+
+### &lt;table class="authors"&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;
+Denis Cohen
+&lt;/td&gt;
+&lt;td&gt;
+.cyan[Methods Bites]
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;
+.font80[University of Mannheim]
+&lt;/td&gt;
+&lt;td&gt;
+.cyan[.font80[Blog of the MZES Social Science Data Lab]]
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;table class="contact"&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;
+&lt;i class="fas  fa-envelope "&gt;&lt;/i&gt; &lt;a href="mailto:denis.cohen@mzes.uni-mannheim.de"&gt;&lt;code&gt;denis.cohen@mzes.uni-mannheim.de&lt;/code&gt;&lt;/a&gt;
+&lt;/td&gt;
+&lt;td&gt;
+.cyan[&lt;i class="fas  fa-envelope "&gt;&lt;/i&gt; &lt;a href="mailto:ssdl_team@mzes.uni-mannheim.de"&gt;&lt;code&gt;ssdl_team@mzes.uni-mannheim.de&lt;/code&gt;&lt;/a&gt;]
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;
+&lt;i class="fas  fa-globe "&gt;&lt;/i&gt; &lt;a href="https://denis-cohen.github.io"&gt;&lt;code&gt;denis-cohen.github.io&lt;/code&gt;&lt;/a&gt;
+&lt;/td&gt;
+&lt;td&gt;
+.cyan[&lt;i class="fas  fa-globe "&gt;&lt;/i&gt; &lt;a href="https://www.mzes.uni-mannheim.de/socialsciencedatalab/"&gt;&lt;code&gt;mzes.uni-mannheim.de/socialsciencedatalab&lt;/code&gt;&lt;/a&gt;]
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;
+&lt;i class="fab  fa-twitter "&gt;&lt;/i&gt; &lt;a href="https://twitter.com/denis_cohen"&gt;&lt;code&gt;@denis_cohen&lt;/code&gt;&lt;/a&gt;
+&lt;/td&gt;
+&lt;td&gt;
+.cyan[&lt;i class="fab  fa-twitter "&gt;&lt;/i&gt; &lt;a href="https://twitter.com/mzes_ssdl"&gt;&lt;code&gt;@mzes_ssdl&lt;/code&gt;&lt;/a&gt;]
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script src="xaringan/macros.js"></script>
+<script>var slideshow = remark.create({
+"highlightStyle": "github",
+"highlightLines": true,
+"countIncrementalSlides": false,
+"ratio": "16:9",
+"slideNumberFormat": "<div class=\"progress-bar-container\">\n  <div class=\"progress-bar\" style=\"width: calc(%current% / %total% * 100%);\">\n  </div>\n</div>\n"
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+<style>
+.logo {
+  background-image: url('xaringan/mzes-logo-solo-4c.png');
+  background-size: contain;
+  background-repeat: no-repeat;
+  position: absolute;
+  bottom: 1em;
+  right: 1em;
+  width: 148px;
+  height: 100px;
+  z-index: 0;
+}
+</style>
+
+<script>
+document
+  .querySelectorAll(
+    '.remark-slide-content' +
+    '.title-slide'
+  )
+  .forEach(el => {
+    el.innerHTML += '<div class="logo"></div>';
+  });
+</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>
